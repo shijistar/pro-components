@@ -10,7 +10,7 @@ import { ProFieldFC } from '../../index';
  */
 const FieldText: ProFieldFC<{
   text: string;
-}> = ({ text, mode, light, render, renderFormItem, formItemProps }, ref) => {
+}> = ({ label, text, mode, light, render, renderFormItem, formItemProps }, ref) => {
   const inputRef = useRef();
   useImperativeHandle(
     ref,
@@ -30,7 +30,7 @@ const FieldText: ProFieldFC<{
   if (mode === 'edit' || mode === 'update') {
     let dom;
     if (light) {
-      dom = <DropdownInput ref={inputRef} {...formItemProps} />
+      dom = <DropdownInput label={label} ref={inputRef} {...formItemProps} />
     } else {
       dom = <Input ref={inputRef} {...formItemProps} />;
     }
