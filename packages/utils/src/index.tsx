@@ -1,4 +1,6 @@
 import LabelIconTip from './components/LabelIconTip';
+import FieldDropdown from './components/FiledDropdown';
+import FieldLabel from './components/FieldLabel';
 
 import isBrowser from './isBrowser';
 import isImg from './isImg';
@@ -35,6 +37,8 @@ export type {
 
 export {
   LabelIconTip,
+  FieldDropdown,
+  FieldLabel,
   useDocumentTitle,
   isImg,
   pickUndefined,

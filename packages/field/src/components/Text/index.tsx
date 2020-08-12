@@ -1,5 +1,6 @@
 import { Input } from 'antd';
 import React, { useRef, useImperativeHandle } from 'react';
+import DropdownInput from './DropdownInput';
 
 import { ProFieldFC } from '../../index';
 
@@ -9,7 +10,7 @@ import { ProFieldFC } from '../../index';
  */
 const FieldText: ProFieldFC<{
   text: string;
-}> = ({ text, mode, render, renderFormItem, formItemProps }, ref) => {
+}> = ({ text, mode, light, render, renderFormItem, formItemProps }, ref) => {
   const inputRef = useRef();
   useImperativeHandle(
     ref,
@@ -27,7 +28,12 @@ const FieldText: ProFieldFC<{
     return <>{dom}</>;
   }
   if (mode === 'edit' || mode === 'update') {
-    const dom = <Input ref={inputRef} {...formItemProps} />;
+    let dom;
+    if (light) {
+      dom = <DropdownInput ref={inputRef} {...formItemProps} />
+    } else {
+      dom = <Input ref={inputRef} {...formItemProps} />;
+    }
     if (renderFormItem) {
       return renderFormItem(text, { mode, ...formItemProps }, dom);
     }
