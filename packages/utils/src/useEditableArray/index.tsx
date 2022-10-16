@@ -10,7 +10,16 @@ import useMergedState from 'rc-util/lib/hooks/useMergedState';
 import get from 'rc-util/lib/utils/get';
 import set from 'rc-util/lib/utils/set';
 import { noteOnce } from 'rc-util/lib/warning';
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, {
+  useContext,
+  useMemo,
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  createRef,
+} from 'react';
 import { useDebounceFn, useRefFunction } from '..';
 import { ProFormContext } from '../components/ProFormContext';
 import { useDeepCompareEffectDebounce } from '../hooks/useDeepCompareEffect';
@@ -276,66 +285,76 @@ export function editableRowByKey<RecordType>(
  *
  * @param ActionRenderConfig
  */
-export function SaveEditableAction<T>({
-  recordKey,
-  onSave,
-  row,
-  children,
-  newLineConfig,
-  editorType,
-  tableName,
-}: ActionRenderConfig<T> & { row: any; children: any }) {
+export function SaveEditableAction<T>(
+  {
+    recordKey,
+    onSave,
+    row,
+    children,
+    newLineConfig,
+    editorType,
+    tableName,
+  }: ActionRenderConfig<T> & { row: any; children: any },
+  ref: React.Ref<SaveEditableActionRef<T>>,
+) {
   const context = useContext(ProFormContext);
   const form = Form.useFormInstance();
   const [loading, setLoading] = useMountMergeState<boolean>(false);
+  const save = useRefFunction(async () => {
+    try {
+      const isMapEditor = editorType === 'Map';
+      // 为了兼容类型为 array 的 dataIndex,当 recordKey 是一个数组时，用于获取表单值的 key 只取第一项，
+      // 从表单中获取回来之后，再根据 namepath 获取具体的某个字段并设置
+      const namePath = [tableName, Array.isArray(recordKey) ? recordKey[0] : recordKey]
+        .map((key) => key?.toString())
+        .flat(1)
+        .filter(Boolean) as string[];
+      setLoading(true);
+      // @ts-expect-error
+      await form.validateFields(namePath, {
+        recursive: true,
+      });
+
+      const fields = context.getFieldFormatValue?.(namePath) || form.getFieldValue(namePath);
+      // 处理 dataIndex 为数组的情况
+      if (Array.isArray(recordKey) && recordKey.length > 1) {
+        // 获取 namepath
+        const [, ...recordKeyPath] = recordKey;
+        // 将目标值获取出来并设置到 fields 当中
+        const curValue = get(fields, recordKeyPath as string[]);
+        set(fields, recordKeyPath, curValue);
+      }
+      const data = isMapEditor ? set({}, namePath, fields, true) : fields;
+
+      // 获取数据并保存
+      const res = await onSave?.(
+        recordKey,
+        // 如果是 map 模式，fields 就是一个值，所以需要set 到对象中
+        // 数据模式 fields 是一个对象，所以不需要
+        merge({}, row, data),
+        row,
+        newLineConfig,
+      );
+      setLoading(false);
+      return res;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+      setLoading(false);
+      return null;
+    }
+  });
+  useImperativeHandle(ref, () => ({
+    save,
+  }));
+
   return (
     <a
       key="save"
       onClick={async (e) => {
         e.stopPropagation();
         e.preventDefault();
-        try {
-          const isMapEditor = editorType === 'Map';
-          // 为了兼容类型为 array 的 dataIndex,当 recordKey 是一个数组时，用于获取表单值的 key 只取第一项，
-          // 从表单中获取回来之后，再根据 namepath 获取具体的某个字段并设置
-          const namePath = [tableName, Array.isArray(recordKey) ? recordKey[0] : recordKey]
-            .map((key) => key?.toString())
-            .flat(1)
-            .filter(Boolean) as string[];
-          setLoading(true);
-          // @ts-expect-error
-          await form.validateFields(namePath, {
-            recursive: true,
-          });
-
-          const fields = context.getFieldFormatValue?.(namePath) || form.getFieldValue(namePath);
-          // 处理 dataIndex 为数组的情况
-          if (Array.isArray(recordKey) && recordKey.length > 1) {
-            // 获取 namepath
-            const [, ...recordKeyPath] = recordKey;
-            // 将目标值获取出来并设置到 fields 当中
-            const curValue = get(fields, recordKeyPath as string[]);
-            set(fields, recordKeyPath, curValue);
-          }
-          const data = isMapEditor ? set({}, namePath, fields, true) : fields;
-
-          // 获取数据并保存
-          const res = await onSave?.(
-            recordKey,
-            // 如果是 map 模式，fields 就是一个值，所以需要set 到对象中
-            // 数据模式 fields 是一个对象，所以不需要
-            merge({}, row, data),
-            row,
-            newLineConfig,
-          );
-          setLoading(false);
-          return res;
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.log(error);
-          setLoading(false);
-          return null;
-        }
+        await save();
       }}
     >
       {loading ? (
@@ -349,6 +368,10 @@ export function SaveEditableAction<T>({
     </a>
   );
 }
+export type SaveEditableActionRef<T = any> = {
+  /** 直接触发保存动作 */
+  save: () => ReturnType<NonNullable<RowEditableConfig<T>['onSave']>> | Promise<void>;
+};
 
 /**
  * 删除按钮 dom
@@ -433,18 +456,24 @@ const CancelEditableAction: React.FC<ActionRenderConfig<any> & { row: any }> = (
 
 export function defaultActionRender<T>(row: T, config: ActionRenderConfig<T, NewLineConfig<T>>) {
   const { recordKey, newLineConfig, saveText, deleteText } = config;
+  const SaveEditableActionRef = forwardRef(SaveEditableAction as typeof SaveEditableAction<T>);
+  const saveRef = createRef<SaveEditableActionRef<T>>();
 
-  return [
-    <SaveEditableAction<T> key={'save' + recordKey} {...config} row={row}>
-      {saveText}
-    </SaveEditableAction>,
-    newLineConfig?.options.recordKey !== recordKey ? (
-      <DeleteEditableAction key={'delete' + recordKey} {...config} row={row}>
-        {deleteText}
-      </DeleteEditableAction>
-    ) : null,
-    <CancelEditableAction key={'cancel' + recordKey} {...config} row={row} />,
-  ];
+  return {
+    save: (
+      <SaveEditableActionRef key={'save' + recordKey} {...config} row={row} ref={saveRef}>
+        {saveText}
+      </SaveEditableActionRef>
+    ),
+    saveRef,
+    delete:
+      newLineConfig?.options.recordKey !== recordKey ? (
+        <DeleteEditableAction key={'delete' + recordKey} {...config} row={row}>
+          {deleteText}
+        </DeleteEditableAction>
+      ) : undefined,
+    cancel: <CancelEditableAction key={'cancel' + recordKey} {...config} row={row} />,
+  };
 }
 
 /**
@@ -726,6 +755,17 @@ export function useEditableArray<RecordType>(
   const saveText = props?.saveText || intl.getMessage('editableTable.action.save', '保存');
   const deleteText = props?.deleteText || intl.getMessage('editableTable.action.delete', '删除');
   const cancelText = props?.cancelText || intl.getMessage('editableTable.action.cancel', '取消');
+  const saveRefsMap = useRef<Map<React.Key, React.RefObject<SaveEditableActionRef>>>(
+    new Map<React.Key, React.RefObject<SaveEditableActionRef>>(),
+  );
+  useEffect(() => {
+    // 只保留编辑状态的
+    saveRefsMap.current.forEach((ref, key) => {
+      if (!editableKeysSet.has(key)) {
+        saveRefsMap.current.delete(key);
+      }
+    });
+  }, [saveRefsMap, editableKeysSet]);
 
   const actionSaveRef = useRefFunction(
     async (
@@ -827,16 +867,43 @@ export function useEditableArray<RecordType>(
         props.deletePopconfirmMessage || `${intl.getMessage('deleteThisLine', '删除此行')}?`,
     };
 
-    const defaultDoms = defaultActionRender<RecordType>(row, config);
-
+    const renderResult = defaultActionRender<RecordType>(row, config);
+    saveRefsMap.current.set(recordKeyToString(key), renderResult.saveRef);
     if (props.actionRender)
       return props.actionRender(row, config, {
-        save: defaultDoms[0],
-        delete: defaultDoms[1],
-        cancel: defaultDoms[2],
+        save: renderResult.save,
+        delete: renderResult.delete,
+        cancel: renderResult.cancel,
       });
-    return defaultDoms;
+    return [renderResult.save, renderResult.delete, renderResult.cancel];
   };
+
+  /**
+   * 保存编辑行
+   *
+   * @param recordKey
+   * @param needReTry
+   */
+  const saveRecord = useRefFunction(async (recordKey: RecordKey, needReTry?: boolean) => {
+    const relayKey = recordKeyToString(recordKey).toString();
+
+    const key = dataSourceKeyIndexMapRef.current.get(relayKey);
+
+    /** 如果没找到key，转化一下再去找 */
+    if (!editableKeysSet.has(relayKey) && key && (needReTry ?? true) && props.tableName) {
+      saveRecord(key, false);
+      return;
+    }
+
+    const saveRef =
+      saveRefsMap.current.get(relayKey) || saveRefsMap.current.get(recordKeyToString(recordKey));
+    const result = await saveRef?.current?.save();
+
+    editableKeysSet.delete(relayKey);
+    editableKeysSet.delete(recordKeyToString(recordKey));
+    setEditableRowKeys(Array.from(editableKeysSet));
+    return result;
+  });
 
   return {
     editableKeys,
@@ -846,6 +913,7 @@ export function useEditableArray<RecordType>(
     startEditable,
     cancelEditable,
     addEditRecord,
+    saveRecord,
     newLineRecord: newLineRecordCache,
     preEditableKeys: editableKeysRef,
     onValuesChange,

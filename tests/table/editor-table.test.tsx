@@ -225,6 +225,68 @@ describe('EditorProTable', () => {
     wrapper.unmount();
   });
 
+  it('📝 EditableProTable saveRecord should save and quit editing', async () => {
+    const actionRef = React.createRef<ActionType>();
+    let changedDataSource: DataSourceType[] = [];
+    const onChange = jest.fn((value) => {
+      changedDataSource = value;
+    });
+    const wrapper = render(
+      <EditableProTable<DataSourceType>
+        rowKey="id"
+        pagination={{
+          pageSize: 2,
+          current: 2,
+        }}
+        onChange={onChange}
+        actionRef={actionRef}
+        columns={columns}
+        value={[
+          {
+            id: '624748504',
+            title: '🐛 [BUG]yarn install命令 antd2.4.5会报错',
+            labels: [{ name: 'bug', color: 'error' }],
+            time: {
+              created_at: '1590486176000',
+            },
+            state: 'processing',
+          },
+        ]}
+      />,
+    );
+    await waitForComponentToPaint(wrapper, 1000);
+
+    expect(
+      wrapper.container.querySelector('.ant-table-tbody')?.querySelectorAll('tr.ant-table-row')
+        .length,
+    ).toBe(1);
+    act(() => {
+      wrapper.container.querySelector<HTMLButtonElement>('a#editor')?.click();
+    });
+    await waitForComponentToPaint(wrapper, 1000);
+
+    act(() => {
+      fireEvent.change(
+        wrapper.container.querySelectorAll(`.ant-form-item-control-input input`)[1],
+        {
+          target: {
+            value: 'test value',
+          },
+        },
+      );
+    });
+    await waitForComponentToPaint(wrapper, 1000);
+
+    await actionRef.current?.saveRecord('624748504');
+    await waitForComponentToPaint(wrapper, 1000);
+
+    expect(onChange).toBeCalled();
+    expect(changedDataSource).toHaveLength(1);
+    expect(changedDataSource[0]?.title).toBe('test value');
+
+    wrapper.unmount();
+  });
+
   it('📝 EditableProTable add support children column', async () => {
     const onchange = jest.fn();
     const wrapper = render(
