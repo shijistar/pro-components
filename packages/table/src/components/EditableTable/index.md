@@ -126,6 +126,7 @@ nav:
 | onCancel | 取消编辑一行时触发 | `(key: Key, row: T,originRow:T,newLine?:newLineConfig) => Promise<any>` | - |
 | cancelText | 取消编辑一行的文字 | `React.ReactNode` | `取消` |
 | actionRender | 自定义编辑模式的操作栏 | `(row: T, config: ActionRenderConfig<T>) => ReactNode[]` | - |
+| autoSaveEditable | 新增行时自动保存前一个编辑行，仅当 `single` 单行模式时有效 | `boolean` | `false` |
 | deletePopconfirmMessage | 删除时弹出的确认框提示消息 | `ReactNode` | `删除此行？` |
 | onlyOneLineEditorAlertMessage | 只能编辑一行的的提示 | `ReactNode` | `只能同时编辑一行` |
 | onlyAddOneLineAlertMessage | 只能同时新增一行的提示 | `ReactNode` | `只能新增一行` |

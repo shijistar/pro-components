@@ -123,6 +123,8 @@ export type RowEditableConfig<DataType> = {
   onlyOneLineEditorAlertMessage?: React.ReactNode;
   /** 同时只能新增一行的提示 */
   onlyAddOneLineAlertMessage?: React.ReactNode;
+  /** 新增行时自动保存前一个编辑行，仅当type为single时有效 */
+  autoSaveEditable?: boolean;
   /** Table 上设置的name，用于拼接name来获取数据 */
   tableName?: NamePath;
   /** 保存一行的文字 */
@@ -137,7 +139,7 @@ export type ActionTypeText<T> = {
   cancelText?: React.ReactNode;
   saveText?: React.ReactNode;
   editorType?: 'Array' | 'Map';
-  addEditRecord?: (row: T, options?: AddLineOptions) => boolean;
+  addEditRecord?: (row: T, options?: AddLineOptions) => Promise<boolean>;
 };
 
 export type ActionRenderConfig<T, LineConfig = NewLineConfig<T>> = {
@@ -724,6 +726,7 @@ export function useEditableArray<RecordType>(
     },
   );
 
+  const autoSaveEditable = props.autoSaveEditable ?? false;
   /**
    * 同时只能支持一行,取消之后数据消息，不会触发 dataSource
    *
@@ -731,7 +734,7 @@ export function useEditableArray<RecordType>(
    * @param options
    * @name 增加新的行
    */
-  const addEditRecord = useRefFunction((row: RecordType, options?: AddLineOptions) => {
+  const addEditRecord = useRefFunction(async (row: RecordType, options?: AddLineOptions) => {
     if (
       options?.parentKey &&
       !dataSourceKeyIndexMapRef.current.has(recordKeyToString(options?.parentKey).toString())
@@ -739,19 +742,29 @@ export function useEditableArray<RecordType>(
       console.warn("can't find record by key", options?.parentKey);
       return false;
     }
-    // 暂时不支持多行新增
-    if (newLineRecordRef.current && props.onlyAddOneLineAlertMessage !== false) {
-      warning(props.onlyAddOneLineAlertMessage || '只能新增一行');
-      return false;
+    if (newLineRecordRef.current) {
+      if (autoSaveEditable && editableType === 'single') {
+        // 自动保存上一个新行
+        if (!(await saveEditable(newLineRecordRef.current.options.recordKey!))) {
+          return false;
+        }
+      } else if (props.onlyAddOneLineAlertMessage !== false) {
+        // 暂时不支持多行新增
+        warning(props.onlyAddOneLineAlertMessage || '只能新增一行');
+        return false;
+      }
     }
-    // 如果是单行的话，不允许多行编辑
-    if (
-      editableKeysSet.size > 0 &&
-      editableType === 'single' &&
-      props.onlyOneLineEditorAlertMessage !== false
-    ) {
-      warning(props.onlyOneLineEditorAlertMessage || '只能同时编辑一行');
-      return false;
+    if (editableKeysSet.size > 0 && editableType === 'single') {
+      if (autoSaveEditable) {
+        // 自动保存上一个编辑行
+        if (!(await saveEditable(editableKeysSet.values().next().value))) {
+          return false;
+        }
+      } else if (props.onlyOneLineEditorAlertMessage !== false) {
+        // 如果是单行的话，不允许多行编辑
+        warning(props.onlyOneLineEditorAlertMessage || '只能同时编辑一行');
+        return false;
+      }
     }
     // 防止多次渲染
     const recordKey = props.getRowKey(row, -1);

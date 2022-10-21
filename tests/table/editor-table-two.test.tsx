@@ -169,6 +169,7 @@ const EditorProTableDemo = (
     value: props.dataSource,
     onChange: props.onDataSourceChange,
   });
+  const seedRef = useRef(0);
   return (
     <EditableProTable<DataSourceType>
       rowKey="id"
@@ -179,7 +180,8 @@ const EditorProTableDemo = (
           onClick={() => {
             actionRef.current?.addEditRecord(
               {
-                id: 10000,
+                // 有可能同时编辑多条记录，所以不能使用固定的id
+                id: 10000 + seedRef.current++,
               },
               {
                 position: props.position,
@@ -190,13 +192,15 @@ const EditorProTableDemo = (
           增加一行
         </Button>,
       ]}
-      columns={columns.map((item) => {
-        if (!props.hideRules) {
-          // eslint-disable-next-line no-param-reassign
-          delete item.formItemProps;
-        }
-        return item;
-      })}
+      columns={columns
+        .map((item) => ({ ...item })) // 浅拷贝一下，否则下面的delete操作会有副作用
+        .map((item) => {
+          if (!props.hideRules) {
+            // eslint-disable-next-line no-param-reassign
+            delete item.formItemProps;
+          }
+          return item;
+        })}
       actionRef={actionRef}
       request={async () => ({
         data: defaultData,
@@ -1861,5 +1865,104 @@ describe('EditorProTable 2', () => {
     expect(
       wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
     ).toBe(4);
+  });
+
+  it('📝 support auto saving previous new row when add a new row', async () => {
+    const onChange = jest.fn();
+    const wrapper = render(
+      <EditorProTableDemo
+        autoSaveEditable
+        onDataSourceChange={(records) => onChange(records.length)}
+      />,
+    );
+    await waitForComponentToPaint(wrapper, 1000);
+
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(0);
+
+    await act(async () => {
+      wrapper.queryByText('增加一行')?.click();
+    });
+    await waitForComponentToPaint(wrapper, 100);
+
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(4);
+
+    await act(async () => {
+      wrapper.queryByText('增加一行')?.click();
+    });
+    await waitForComponentToPaint(wrapper, 100);
+
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(4);
+    expect(onChange).toBeCalledWith(4);
+  });
+
+  it('📝 support auto saving previous editing row when add a new row', async () => {
+    const onChange = jest.fn();
+    const wrapper = render(
+      <EditorProTableDemo
+        autoSaveEditable
+        onDataSourceChange={(records) => onChange(records.length)}
+      />,
+    );
+    await waitForComponentToPaint(wrapper, 1000);
+
+    act(() => {
+      wrapper.container.querySelectorAll<HTMLSpanElement>('#editor')[0].click();
+    });
+
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(4);
+
+    await act(async () => {
+      wrapper.queryByText('增加一行')?.click();
+    });
+    await waitForComponentToPaint(wrapper, 200);
+
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(4);
+    expect(onChange).toBeCalledWith(3);
+  });
+
+  it('📝 support auto saving previous new row when add a new row, having rules', async () => {
+    const onSave = jest.fn();
+    const wrapper = render(<EditorProTableDemo hideRules autoSaveEditable onSave={onSave} />);
+    await waitForComponentToPaint(wrapper, 1000);
+
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(0);
+
+    await act(async () => {
+      wrapper.queryByText('增加一行')?.click();
+    });
+    await waitForComponentToPaint(wrapper, 100);
+    // console.log(wrapper.container.innerHTML);
+
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(4);
+
+    await act(async () => {
+      wrapper.queryByText('增加一行')?.click();
+    });
+    await waitForComponentToPaint(wrapper, 100);
+
+    // 要存在校验错误
+    expect(
+      wrapper.container
+        .querySelectorAll('.ant-table-tbody')[0]
+        .querySelectorAll('.ant-form-item-has-error').length,
+    ).toBeGreaterThan(0);
+    expect(
+      wrapper.container.querySelectorAll('.ant-table-tbody')[0].querySelectorAll('input').length,
+    ).toBe(4);
+    expect(onSave).not.toBeCalled();
   });
 });

@@ -216,7 +216,7 @@ describe('EditorProTable', () => {
     await waitForComponentToPaint(wrapper, 1000);
 
     try {
-      actionRef.current?.addEditRecord(undefined);
+      await actionRef.current?.addEditRecord(undefined);
     } catch (error: any) {
       expect(error.message).toEqual('请设置 recordCreatorProps.record 并返回一个唯一的key');
     }
