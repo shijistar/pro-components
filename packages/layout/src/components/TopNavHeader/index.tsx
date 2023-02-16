@@ -27,6 +27,7 @@ const TopNavHeader: React.FC<TopNavHeaderProps> = (
     onMenuHeaderClick,
     contentWidth,
     rightContentRender,
+    theme,
     className: propsClassName,
     style,
     headerContentRender,
@@ -52,7 +53,7 @@ const TopNavHeader: React.FC<TopNavHeaderProps> = (
   const contentDom = useMemo(() => {
     const defaultDom = (
       <BaseMenu
-        theme={dark ? 'dark' : 'light'}
+        theme={theme}
         {...props}
         className={`${prefixCls}-base-menu ${hashId}`}
         {...props.menuProps}

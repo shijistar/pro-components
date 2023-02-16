@@ -462,6 +462,7 @@ const getOpenKeysProps = (
 const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
   const {
     mode,
+    theme,
     className,
     handleOpenChange,
     style,
@@ -624,7 +625,7 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
       mode={mode}
       inlineIndent={16}
       defaultOpenKeys={defaultOpenKeysRef.current}
-      theme={dark ? 'dark' : 'light'}
+      theme={theme}
       selectedKeys={selectedKeys}
       style={{
         backgroundColor: 'transparent',

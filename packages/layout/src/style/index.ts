@@ -91,6 +91,9 @@ const compatibleStyle: GenerateStyle<ProLayoutToken> = (token) => {
               color: token?.layout?.sider?.colorTextMenuActive,
             },
           },
+          [`${token.antCls}-menu-item-selected:hover`]: {
+            backgroundColor: token?.layout?.sider?.colorBgMenuItemSelected,
+          },
         },
         [`${token.antCls}-menu-item-selected`]: {
           color: token?.layout?.sider?.colorTextMenuSelected,
