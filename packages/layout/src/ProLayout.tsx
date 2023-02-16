@@ -761,7 +761,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
           </div>
           <Layout
             style={{
-              minHeight: '100%',
+              height: '100%', // minHeight起不到满屏的效果，会撑出纵向滚动条
               // hack style
               flexDirection: siderMenuDom ? 'row' : undefined,
               ...style,
