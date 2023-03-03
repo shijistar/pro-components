@@ -1,38 +1,39 @@
 ﻿import type { ProCardProps } from '@ant-design/pro-card';
 import type { ProFieldEmptyText } from '@ant-design/pro-field';
 import type {
-  LightWrapperProps,
-  ProFormProps,
-  QueryFilterProps,
+LightWrapperProps,
+ProFormProps,
+QueryFilterProps
 } from '@ant-design/pro-form';
 import type {
-  ProCoreActionType,
-  ProSchema,
-  ProSchemaComponentTypes,
-  ProTableEditableFnType,
-  RowEditableConfig,
-  SearchTransformKeyFn,
+ProCoreActionType,
+ProSchema,
+ProSchemaComponentTypes,
+ProTableEditableFnType,
+RowEditableConfig,
+SearchTransformKeyFn
 } from '@ant-design/pro-utils';
-import type { SpinProps, TableProps } from 'antd';
+import type { SpinProps,TableProps } from 'antd';
 import type { SizeType } from 'antd/lib/config-provider/SizeContext';
 import type { LabelTooltipType } from 'antd/lib/form/FormItemLabel';
 import type { NamePath } from 'antd/lib/form/interface';
 import type { SearchProps } from 'antd/lib/input';
 import type {
-  ColumnFilterItem,
-  ColumnType,
-  CompareFn,
-  SortOrder,
+ColumnFilterItem,
+ColumnType,
+CompareFn,
+SortOrder
 } from 'antd/lib/table/interface';
 import type dayjs from 'dayjs';
 import type React from 'react';
 import type { CSSProperties } from 'react';
 import type { AlertRenderType } from './components/Alert';
-import type { SearchConfig, TableFormItem } from './components/Form/FormRender';
+import type { SearchConfig,TableFormItem } from './components/Form/FormRender';
 import type { ListToolBarProps } from './components/ListToolBar';
-import type { OptionConfig, ToolBarProps } from './components/ToolBar';
+import type { OptionConfig,ToolBarProps } from './components/ToolBar';
 import type { DensitySize } from './components/ToolBar/DensityIcon';
-import type { ColumnsState, ContainerType } from './Store/Provide';
+import type { GDCDProTableProps } from './gdcd-pro';
+import type { ColumnsState,ContainerType } from './Store/Provide';
 
 export type PageInfo = {
   pageSize: number;
@@ -445,7 +446,8 @@ export type ProTableProps<DataSource, U, ValueType = 'text'> = {
    * 错误边界自定义
    */
   ErrorBoundary?: any;
-} & Omit<TableProps<DataSource>, 'columns' | 'rowSelection'>;
+} & Omit<TableProps<DataSource>, 'columns' | 'rowSelection'> &
+  GDCDProTableProps<DataSource, U, ValueType>;
 
 export type ActionType = ProCoreActionType & {
   fullScreen?: () => void;

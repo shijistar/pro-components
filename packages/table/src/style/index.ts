@@ -1,6 +1,7 @@
 ﻿import { Keyframes } from '@ant-design/cssinjs';
 import type { GenerateStyle, ProAliasToken } from '@ant-design/pro-provider';
 import { useStyle as useAntdStyle } from '@ant-design/pro-provider';
+import { getCustomizedStyle } from './gdcd-pro';
 
 export interface ProListToken extends ProAliasToken {
   componentCls: string;
@@ -117,6 +118,7 @@ const genProListStyle: GenerateStyle<ProListToken> = (token) => {
           opacity: '0.85',
         },
       },
+      ...(getCustomizedStyle(token) as object),
     },
 
     [`@media (max-width: ${token.screenXS})`]: {

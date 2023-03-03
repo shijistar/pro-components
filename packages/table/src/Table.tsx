@@ -34,6 +34,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
+import { useCustomizedTableProps, useDefaultPagination } from './gdcd-pro';
 import { stringify } from 'use-json-comparison';
 import type { ActionType } from '.';
 import Alert from './components/Alert';
@@ -202,6 +203,7 @@ function TableRender<T extends Record<string, any>, U, ValueType>(
     return [...action.dataSource, row];
   };
 
+  const customizedProps = useCustomizedTableProps<T, U, ValueType>(props);
   const getTableProps = () => ({
     ...rest,
     size,
@@ -216,6 +218,7 @@ function TableRender<T extends Record<string, any>, U, ValueType>(
       ? editableDataSource(action.dataSource)
       : action.dataSource,
     pagination,
+    ...customizedProps,
     onChange: (
       changePagination: TablePaginationConfig,
       filters: Record<string, (React.Key | boolean)[] | null>,
@@ -618,9 +621,10 @@ const ProTable = <
   }, [action.dataSource, getRowKey]);
 
   /** 页面编辑的计算 */
+  const defaultPagination = useDefaultPagination<T, U, ValueType>(props);
   const pagination = useMemo(() => {
     const newPropsPagination =
-      propsPagination === false ? false : { ...propsPagination };
+      propsPagination === false ? false : { ...defaultPagination, ...propsPagination };
     const pageConfig = {
       ...action.pageInfo,
       setPageInfo: ({ pageSize, current }: PageInfo) => {

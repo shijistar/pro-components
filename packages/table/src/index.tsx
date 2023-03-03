@@ -65,7 +65,7 @@ export {
   EditableProTable,
   DragSortTable,
   ConfigConsumer as IntlConsumer,
-  ConfigConsumer,
+  // ConfigConsumer,
   zhCNIntl,
   FieldIndexColumn as IndexColumn,
   createIntl,

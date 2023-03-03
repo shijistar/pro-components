@@ -102,6 +102,8 @@ ProTable 在 antd 的 Table 上进行了一层封装，支持了一些预设，�
 | revalidateOnFocus | 窗口聚焦时自动重新请求 | `boolean` | `true` |
 | columnsState | 受控的列状态，可以操作显示隐藏 | `ColumnStateType` | - |
 | ErrorBoundary | 自带了错误处理功能，防止白屏，`ErrorBoundary=false` 关闭默认错误边界 | `ReactNode` | 内置 ErrorBoundary |
+| fullHeight 🔥 | 宽高都 100% 撑满整个父容器，同时在表格内部显示横向和纵向滚动条 | `boolean` | `false` |
+| pagination 🔥 | 新增支持设置为`true`，自动使用 gdcd 的默认分页配置，其它的使用方式与 ProTable 一致 | `boolean \| TablePaginationConfig` | `false` |
 
 #### RecordCreator
 

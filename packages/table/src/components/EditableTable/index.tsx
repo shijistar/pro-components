@@ -24,6 +24,7 @@ import React, {
 } from 'react';
 import ProTable from '../../Table';
 import type { ActionType, ProTableProps } from '../../typing';
+import { GDCDEditableProTableProps, useCustomizedProTableProps } from './gdcd-pro';
 
 export type EditableFormInstance<T = any> = ProFormInstance<T> & {
   /**
@@ -87,7 +88,7 @@ export type EditableProTableProps<
   T,
   U extends ParamsType,
   ValueType = 'text',
-> = Omit<ProTableProps<T, U, ValueType>, 'onChange'> & {
+> = Omit<ProTableProps<T, U, ValueType>, 'onChange' | 'pagination'> & {
   defaultValue?: readonly T[];
   value?: readonly T[];
   onChange?: (value: readonly T[]) => void;
@@ -114,7 +115,7 @@ export type EditableProTableProps<
   controlled?: boolean;
   /** FormItem 的设置 */
   formItemProps?: Omit<FormItemProps, 'children' | 'name'>;
-};
+} & GDCDEditableProTableProps<T, U, ValueType>;
 
 const EditableTableActionContext = React.createContext<
   React.MutableRefObject<ActionType | undefined> | undefined
@@ -160,6 +161,7 @@ function EditableTable<
     rowKey,
     controlled,
     defaultValue,
+    pagination,
     onChange,
     editableFormRef,
     ...rest
@@ -431,6 +433,8 @@ function EditableTable<
     editableProps.onValuesChange = newOnValueChange;
   }
 
+  const customizedProps = useCustomizedProTableProps<DataType, Params, ValueType>(props);
+
   return (
     <>
       <EditableTableActionContext.Provider value={actionRef}>
@@ -453,6 +457,7 @@ function EditableTable<
             },
           }}
           dataSource={value}
+          {...customizedProps}
           onDataSourceChange={(dataSource: readonly DataType[]) => {
             setValue(dataSource);
             /**
