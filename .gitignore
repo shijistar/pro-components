@@ -22,6 +22,7 @@ jest/**
 package-lock.json
 *bak
 .vscode
+GIT_HEAD
 
 # visual studio code
 .history

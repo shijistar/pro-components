@@ -22,6 +22,8 @@ console.log(`🌼 alias list \n${chalk.blue(Object.keys(alias).join('\n'))}`);
 const tailPkgList = pkgList.map((path) => `packages/${path}/src/components`);
 
 export default defineConfig({
+  base: '/gdcd-pro/',
+  publicPath: '/gdcd-pro/',
   sitemap: { hostname: 'https://procomponents.ant.design' },
   metas: [
     {
