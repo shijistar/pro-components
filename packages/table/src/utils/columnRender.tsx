@@ -151,6 +151,7 @@ export function columnRender<T>({
           style={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: 'start',
             gap: 12,
           }}
         >
