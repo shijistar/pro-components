@@ -44,6 +44,7 @@ import type { SubmitterProps } from '../components';
 import { Submitter } from '../components';
 import { FormListContext } from '../components/List';
 import FieldContext from '../FieldContext';
+import { useCustomizedProFormStyle } from '../gdcd-pro';
 import { GridContext, useGridHelpers } from '../helpers';
 import type { FieldProps, GroupProps, ProFormGridConfig } from '../typing';
 import { EditOrReadOnlyContext } from './EditOrReadOnlyContext';
@@ -537,8 +538,10 @@ function BaseForm<T = Record<string, any>>(props: BaseFormProps<T>) {
   const prefixCls = getPrefixCls('pro-form');
   // css
   const { wrapSSR, hashId } = useStyle('ProForm', (token) => {
+    const customizedStyle = useCustomizedProFormStyle({ ...token, componentCls: `.${prefixCls}` });
     return {
       [`.${prefixCls}`]: {
+        ...customizedStyle,
         [`> div:not(${token.proComponentsCls}-form-light-filter)`]: {
           '.pro-field': {
             maxWidth: '100%',

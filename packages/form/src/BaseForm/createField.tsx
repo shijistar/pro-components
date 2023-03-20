@@ -12,6 +12,7 @@ import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { stringify } from 'use-json-comparison';
 import { ProFormDependency, ProFormItem } from '../components';
 import FieldContext from '../FieldContext';
+import { useFormItemPropsForCreateField } from '../gdcd-pro';
 import { useGridHelpers } from '../helpers';
 import type {
   ExtendsProps,
@@ -98,6 +99,7 @@ function createField<P extends ProFormFieldItemProps = any>(
       ...rest
     } = { ...defaultProps, ...props };
     const valueType = tmpValueType || rest.valueType;
+    const { customizedFormItemProps } = useFormItemPropsForCreateField(props, config);
 
     // 有些 valueType 不需要宽度
     const isIgnoreWidth = useMemo(
@@ -320,6 +322,8 @@ function createField<P extends ProFormFieldItemProps = any>(
             ...otherProps?.messageVariables,
           }}
           convertValue={convertValue}
+          // 自定义扩展的 props
+          {...customizedFormItemProps}
           lightProps={omitUndefined({
             ...fieldProps,
             valueType,

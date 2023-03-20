@@ -9,6 +9,7 @@ import type { LabelTooltipType } from 'antd/lib/form/FormItemLabel';
 import type React from 'react';
 import type { ProFormInstance } from './BaseForm';
 import type { ProFormItemProps } from './components';
+import { CustomizedProFormItemProps } from './gdcd-pro';
 import type { CaptFieldRef } from './components/Captcha';
 
 export interface ProFormGridConfig {
@@ -243,7 +244,8 @@ export type ProFormFieldItemProps<T = Record<string, any>, K = any> = {
   children?: React.ReactNode;
 } & Omit<ProFormItemProps, 'valueType'> &
   Pick<ProFormGridConfig, 'colProps'> &
-  ExtendsProps;
+  ExtendsProps &
+  CustomizedProFormItemProps;
 
 /**
  * load remote data props

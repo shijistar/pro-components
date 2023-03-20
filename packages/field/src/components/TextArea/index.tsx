@@ -22,7 +22,8 @@ const FieldTextArea: ProFieldFC<{
         ref={ref}
         style={{
           display: 'inline-block',
-          padding: '4px 11px',
+          // 不应该在这里写死，应该由form的layout来全局控制
+          // padding: '4px 11px',
           lineHeight: '1.5715',
           maxWidth: '100%',
           whiteSpace: 'pre-wrap',

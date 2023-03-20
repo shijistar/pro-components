@@ -76,6 +76,7 @@ ProForm 自带的 Filed ,与 valueType 基本上一一对应。
 | tooltip | 会在 label 旁增加一个 icon，悬浮后展示配置的信息 | `string \| tooltipProps` | - |
 | secondary | 是否是次要控件，只针对 LightFilter 下有效 | `boolean` | `false` |
 | allowClear | 支持清除，针对 LightFilter 下有效，主动设置情况下同时也会透传给 `fieldProps` | `boolean` | `true` |
+| 🔥 readModeBorder | 只读模式下，是否为控件值添加边框。对于单列的表单，如果没有边框，内容主要都集中在左侧，右侧比较空，页面比例不太协调。 | `boolean` | `false` |
 
 ### 宽度
 
