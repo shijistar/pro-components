@@ -183,6 +183,7 @@ export type CommonFormProps<
    *  @description 优先低于表单项的 readonly
    */
   readonly?: boolean;
+  proFieldProps?: ProFieldProps;
 } & ProFormGridConfig;
 
 export type BaseFormProps<T = Record<string, any>> = {
