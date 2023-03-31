@@ -54,6 +54,8 @@ const ProFormText = (props) => {
 
 <code src="./demos/search-select.tsx" title="查询表单" ></code>
 
+<code src="./demos/read-mode-border.tsx" title="🔥 只读边框"></code>
+
 <code src="./demos/form-fieldset.tsx" title="结构化数据" ></code>
 
 <code src="./demos/datatime.tsx" title="日期表单"></code>

@@ -2,8 +2,8 @@ import { useContext } from 'react';
 import classNames from 'classnames';
 import { ConfigProvider, FormItemProps } from 'antd';
 import { ConfigContext } from 'antd/lib/config-provider';
-import type { ProAliasToken } from '@ant-design/pro-provider';
-import { CSSInterpolation } from '@ant-design/cssinjs';
+import { ProAliasToken, ProProvider } from '@ant-design/pro-provider';
+import { CSSInterpolation, useCacheToken } from '@ant-design/cssinjs';
 import { ExtendsProps, ProFormFieldItemProps, ProFormItemCreateConfig } from './typing';
 import { EditOrReadOnlyContext } from './BaseForm/EditOrReadOnlyContext';
 
@@ -13,7 +13,7 @@ export type CustomizedProFormItemProps = {
    *
    * 对于单列的表单，如果没有边框，内容主要都集中在左侧，右侧比较空，页面比例不太协调。
    *
-   * 如果表单是纵向排列的，建议设置为 `true`。
+   * 如果表单是纵向排列的，建议设置为 `false`。
    *
    * @default `false`
    *
@@ -26,7 +26,11 @@ export const useFormItemPropsForCreateField = (
   config?: ProFormItemCreateConfig,
 ) => {
   const { readModeBorder = false } = props;
+  // 优先尝试Ant Design V5 Token System 构建的业务级 css-in-js 解决方案
+
+  const { token = {} as ProAliasToken, hashId = '', theme } = useContext(ProProvider);
   const { getPrefixCls } = useContext(ConfigContext || ConfigProvider.ConfigContext);
+  const proComponentsCls = token.proComponentsCls?.replace(/^\./, '') ?? `${getPrefixCls('pro')}`;
   const modeContext = useContext(EditOrReadOnlyContext);
   const mode = props.proFieldProps?.mode || modeContext?.mode || 'edit';
   const label = props.formItemProps?.label || props.label;
@@ -34,8 +38,8 @@ export const useFormItemPropsForCreateField = (
     customizedFormItemProps: {
       className: classNames(
         props.className,
-        readModeBorder && mode === 'read' && getPrefixCls('pro-form-item-read-mode'),
-        !label && getPrefixCls('pro-form-item-no-label'),
+        readModeBorder && mode === 'read' && `${proComponentsCls}-form-item-read-mode`,
+        !label && `${proComponentsCls}-form-item-no-label`,
       ),
     } as FormItemProps,
   };
@@ -49,6 +53,7 @@ export const useCustomizedProFormStyle = (
   token: ProFormToken,
 ): Record<string, CSSInterpolation> => {
   const { antCls, componentCls } = token;
+  console.log('token', token);
   return {
     [`${antCls}-form-item`]: {
       [`&${componentCls}-item-read-mode:not(${componentCls}-item-no-label)`]: {
@@ -57,8 +62,8 @@ export const useCustomizedProFormStyle = (
             [`> ${antCls}-form-item-control-input`]: {
               [`> ${antCls}-form-item-control-input-content`]: {
                 /*
-                    Copied styles from 'ant-input' class
-                  */
+                  Copied styles from 'ant-input' class
+                */
                 boxSizing: 'border-box',
                 margin: 0,
                 fontVariant: 'tabular-nums',
@@ -75,7 +80,7 @@ export const useCustomizedProFormStyle = (
                 backgroundColor: token.colorBgContainer,
                 backgroundImage: 'none',
                 border: `1px solid ${token.colorBorder}`,
-                borderRadius: '2px',
+                borderRadius: token.borderRadius || '2px',
                 transition: 'all 0.3s',
               },
             },
