@@ -2,6 +2,7 @@
 
 import { theme } from 'antd';
 import type { GlobalToken } from 'antd/lib/theme/interface';
+import { gdcdDefaultToken } from '../gdcd-pro';
 
 export const defaultToken = {
   blue: '#1677ff',
@@ -376,6 +377,7 @@ export const defaultToken = {
   boxShadowTabsOverflowRight: 'inset -10px 0 8px -8px rgba(0, 0, 0, 0.08)',
   boxShadowTabsOverflowTop: 'inset 0 10px 8px -8px rgba(0, 0, 0, 0.08)',
   boxShadowTabsOverflowBottom: 'inset 0 -10px 8px -8px rgba(0, 0, 0, 0.08)',
+  ...gdcdDefaultToken,
   _tokenKey: '19w80ff',
   _hashId: 'css-dev-only-do-not-override-i2zu9q',
 } as any as GlobalToken;
