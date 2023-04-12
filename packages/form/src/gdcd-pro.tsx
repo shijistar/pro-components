@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { ConfigProvider, FormItemProps } from 'antd';
 import { ConfigContext } from 'antd/lib/config-provider';
 import { ProAliasToken, ProProvider } from '@ant-design/pro-provider';
-import { CSSInterpolation, useCacheToken } from '@ant-design/cssinjs';
+import { CSSInterpolation } from '@ant-design/cssinjs';
 import { ExtendsProps, ProFormFieldItemProps, ProFormItemCreateConfig } from './typing';
 import { EditOrReadOnlyContext } from './BaseForm/EditOrReadOnlyContext';
 
@@ -28,17 +28,21 @@ export const useFormItemPropsForCreateField = (
   const { readModeBorder = false } = props;
   // 优先尝试Ant Design V5 Token System 构建的业务级 css-in-js 解决方案
 
-  const { token = {} as ProAliasToken, hashId = '', theme } = useContext(ProProvider);
+  const { token = {} as ProAliasToken /* hashId = '', theme */ } = useContext(ProProvider);
   const { getPrefixCls } = useContext(ConfigContext || ConfigProvider.ConfigContext);
   const proComponentsCls = token.proComponentsCls?.replace(/^\./, '') ?? `${getPrefixCls('pro')}`;
   const modeContext = useContext(EditOrReadOnlyContext);
-  const mode = props.proFieldProps?.mode || modeContext?.mode || 'edit';
+  const readonly =
+    props.readonly ||
+    props.proFieldProps?.readonly ||
+    props.proFieldProps?.mode ||
+    modeContext?.mode === 'read';
   const label = props.formItemProps?.label || props.label;
   return {
     customizedFormItemProps: {
       className: classNames(
         props.className,
-        readModeBorder && mode === 'read' && `${proComponentsCls}-form-item-read-mode`,
+        readModeBorder && readonly && `${proComponentsCls}-form-item-read-mode`,
         !label && `${proComponentsCls}-form-item-no-label`,
       ),
     } as FormItemProps,
@@ -53,7 +57,6 @@ export const useCustomizedProFormStyle = (
   token: ProFormToken,
 ): Record<string, CSSInterpolation> => {
   const { antCls, componentCls } = token;
-  console.log('token', token);
   return {
     [`${antCls}-form-item`]: {
       [`&${componentCls}-item-read-mode:not(${componentCls}-item-no-label)`]: {
