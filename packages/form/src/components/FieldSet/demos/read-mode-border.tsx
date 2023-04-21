@@ -49,7 +49,7 @@ export default () => {
                 return value.includes(keyWords) || label.includes(keyWords);
               });
             }}
-            readModeBorder
+            readonlyBorder
           />
           <ProFormSelect.SearchSelect
             name="userQuery2"
@@ -74,7 +74,7 @@ export default () => {
                 status: 'Processing',
               },
             }}
-            readModeBorder
+            readonlyBorder
           />
           <ProFormSelect.SearchSelect
             name="userQuery3"
@@ -91,7 +91,7 @@ export default () => {
               { label: '已解决', value: 'closed' },
               { label: '解决中', value: 'processing' },
             ]}
-            readModeBorder
+            readonlyBorder
           />
         </ProForm.Group>
       </ProForm>

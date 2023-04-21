@@ -19,13 +19,13 @@ export type CustomizedProFormItemProps = {
    *
    * @type {boolean}
    */
-  readModeBorder?: boolean;
+  readonlyBorder?: boolean;
 };
 export const useFormItemPropsForCreateField = (
   props: ProFormFieldItemProps & ExtendsProps,
   config?: ProFormItemCreateConfig,
 ) => {
-  const { readModeBorder = false } = props;
+  const { readonlyBorder = false } = props;
   // 优先尝试Ant Design V5 Token System 构建的业务级 css-in-js 解决方案
 
   const { token = {} as ProAliasToken /* hashId = '', theme */ } = useContext(ProProvider);
@@ -42,7 +42,7 @@ export const useFormItemPropsForCreateField = (
     customizedFormItemProps: {
       className: classNames(
         props.className,
-        readModeBorder && readonly && `${proComponentsCls}-form-item-read-mode`,
+        readonlyBorder && readonly && `${proComponentsCls}-form-item-read-mode`,
         !label && `${proComponentsCls}-form-item-no-label`,
       ),
     } as FormItemProps,
