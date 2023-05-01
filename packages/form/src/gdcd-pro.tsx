@@ -76,6 +76,7 @@ export const useCustomizedProFormStyle = (
                 display: 'inline-block',
                 width: '100%',
                 minWidth: 0,
+                minHeight: token.fontSize * token.lineHeight + 10 /* padding*2 + border*2 */,
                 padding: '4px 11px',
                 color: token.colorText,
                 fontSize: token.fontSize,
