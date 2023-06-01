@@ -6,7 +6,20 @@ export type GDCDProTableProps<T, U, ValueType = 'text'> = {
   fullHeight?: boolean;
 };
 
-export function useCustomizedTableProps<T, U, ValueType = 'text'>(
+export function useDefaultProTableProps<T, U, ValueType = 'text'>(): ProTableProps<
+  T,
+  U,
+  ValueType
+> {
+  return {
+    search: false,
+    toolBarRender: false,
+    ghost: true,
+    columnEmptyText: false,
+  };
+}
+
+export function useOverrideTableProps<T, U, ValueType = 'text'>(
   props: ProTableProps<T, U, ValueType> & {
     defaultClassName: string;
   },

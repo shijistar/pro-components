@@ -34,12 +34,16 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import { useCustomizedTableProps, useDefaultPagination } from './gdcd-pro';
 import { stringify } from 'use-json-comparison';
 import type { ActionType } from '.';
 import Alert from './components/Alert';
 import FormRender from './components/Form';
 import Toolbar from './components/ToolBar';
+import {
+  useDefaultPagination,
+  useDefaultProTableProps,
+  useOverrideTableProps,
+} from './gdcd-pro';
 import { Container, TableContext } from './Store/Provide';
 import { useStyle } from './style';
 import type {
@@ -203,7 +207,7 @@ function TableRender<T extends Record<string, any>, U, ValueType>(
     return [...action.dataSource, row];
   };
 
-  const customizedProps = useCustomizedTableProps<T, U, ValueType>(props);
+  const customizedProps = useOverrideTableProps<T, U, ValueType>(props);
   const getTableProps = () => ({
     ...rest,
     size,
@@ -624,7 +628,9 @@ const ProTable = <
   const defaultPagination = useDefaultPagination<T, U, ValueType>(props);
   const pagination = useMemo(() => {
     const newPropsPagination =
-      propsPagination === false ? false : { ...defaultPagination, ...propsPagination };
+      propsPagination === false
+        ? false
+        : { ...defaultPagination, ...propsPagination };
     const pageConfig = {
       ...action.pageInfo,
       setPageInfo: ({ pageSize, current }: PageInfo) => {
@@ -960,12 +966,14 @@ const ProviderTableContainer = <
     props.ErrorBoundary === false
       ? React.Fragment
       : props.ErrorBoundary || ErrorBoundary;
+  const defaultProps = useDefaultProTableProps<DataType, Params, ValueType>();
 
   return (
     <Container initValue={props}>
       <ProConfigProvider needDeps>
         <ErrorComponent>
           <ProTable<DataType, Params, ValueType>
+            {...defaultProps}
             defaultClassName={`${getPrefixCls('pro-table')}`}
             {...props}
           />
