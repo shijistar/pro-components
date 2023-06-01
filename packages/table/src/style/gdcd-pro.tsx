@@ -33,23 +33,26 @@ export const getCustomizedStyle = (token: ProListToken): CSSObject => {
         },
       },
     },
-    [`& > ${token.proComponentsCls}-card${token.proComponentsCls}-card-ghost`]: {
-      [`& > ${token.proComponentsCls}-card-body`]: {
-        [`& > ${token.antCls}-table-wrapper + button`]: {
-          marginBottom: '0 !important', // ghost模式下不要添加按钮的marginBottom
-        },
-      },
-    },
-    [`&${token.componentCls}-has-pagination:not(${token.componentCls}-has-creator)`]: {
-      [`& > ${token.proComponentsCls}-card${token.proComponentsCls}-card-ghost`]: {
+    [`& > ${token.proComponentsCls}-card${token.proComponentsCls}-card-ghost`]:
+      {
         [`& > ${token.proComponentsCls}-card-body`]: {
-          [`& > ${token.antCls}-table-wrapper`]: {
-            [`${token.antCls}-table-pagination`]: {
-              marginBottom: 0, // 在ghost模式下，存在分页但不存在添加按钮时，去掉分页组件的marginBottom
-            },
+          [`& > ${token.antCls}-table-wrapper + button`]: {
+            marginBottom: '0 !important', // ghost模式下不要添加按钮的marginBottom
           },
         },
       },
-    },
+    [`&${token.componentCls}-has-pagination:not(${token.componentCls}-has-creator)`]:
+      {
+        [`& > ${token.proComponentsCls}-card${token.proComponentsCls}-card-ghost`]:
+          {
+            [`& > ${token.proComponentsCls}-card-body`]: {
+              [`& > ${token.antCls}-table-wrapper`]: {
+                [`${token.antCls}-table-pagination`]: {
+                  marginBottom: 0, // 在ghost模式下，存在分页但不存在添加按钮时，去掉分页组件的marginBottom
+                },
+              },
+            },
+          },
+      },
   };
 };

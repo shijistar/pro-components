@@ -1,16 +1,16 @@
-import { ProTableProps } from './typing';
 import { TablePaginationConfig, TableProps } from 'antd';
+import { ProTableProps } from './typing';
 
 export type GDCDProTableProps<T, U, ValueType = 'text'> = {
   /** 表格撑满容器，高度100% */
   fullHeight?: boolean;
 };
 
-export function useDefaultProTableProps<T, U, ValueType = 'text'>(): ProTableProps<
+export function useDefaultProTableProps<
   T,
   U,
-  ValueType
-> {
+  ValueType = 'text',
+>(): ProTableProps<T, U, ValueType> {
   return {
     search: false,
     toolBarRender: false,
@@ -36,6 +36,7 @@ export function useDefaultPagination<T, U, ValueType = 'text'>(
     simple: false,
     showSizeChanger: props.size !== 'small',
     showQuickJumper: props.size !== 'small',
-    showTotal: props.size === 'small' ? undefined : (total: number) => `共 ${total} 条`,
+    showTotal:
+      props.size === 'small' ? undefined : (total: number) => `共 ${total} 条`,
   };
 }

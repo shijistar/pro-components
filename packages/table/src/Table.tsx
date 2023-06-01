@@ -976,6 +976,10 @@ const ProviderTableContainer = <
             {...defaultProps}
             defaultClassName={`${getPrefixCls('pro-table')}`}
             {...props}
+            className={classNames(
+              props.className,
+              props.fullHeight && `${getPrefixCls('pro-table')}-full-height`,
+            )}
           />
         </ErrorComponent>
       </ProConfigProvider>
