@@ -1,12 +1,14 @@
 ﻿import type { GenerateStyle, ProAliasToken } from '@ant-design/pro-provider';
 import { useStyle as useAntdStyle } from '@ant-design/pro-provider';
+import merge from 'lodash.merge';
+import { genCustomGlobalHeaderStyle } from '../../gdcd';
 
 export interface GlobalHeaderToken extends ProAliasToken {
   componentCls: string;
 }
 
 const genGlobalHeaderStyle: GenerateStyle<GlobalHeaderToken> = (token) => {
-  return {
+  const style = {
     [token.componentCls]: {
       position: 'relative',
       background: 'transparent',
@@ -61,6 +63,7 @@ const genGlobalHeaderStyle: GenerateStyle<GlobalHeaderToken> = (token) => {
       },
     },
   };
+  return merge(style, genCustomGlobalHeaderStyle(token));
 };
 
 export function useStyle(prefixCls: string) {
