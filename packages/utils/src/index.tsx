@@ -45,7 +45,7 @@ import { isDropdownValueType } from './isDropdownValueType';
 import { isImg } from './isImg';
 import { isNil } from './isNil';
 import { isUrl } from './isUrl';
-import { merge } from './merge';
+import { deepMerge, merge } from './merge';
 import { nanoid } from './nanoid';
 import { omitBoolean } from './omitBoolean';
 import { omitUndefined } from './omitUndefined';
@@ -107,6 +107,7 @@ export {
   omitBoolean,
   isNil,
   merge,
+  deepMerge,
   isDropdownValueType,
   omitUndefined,
   omitUndefinedAndEmptyArr,

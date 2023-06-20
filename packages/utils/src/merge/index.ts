@@ -35,4 +35,27 @@ const merge = <T>(...rest: any[]): T => {
   return obj as T;
 };
 
-export { merge };
+/**
+ * 深度合并n个对象
+ * @param  {any[]} ...objects
+ * @returns T
+ */
+const deepMerge = <T>(...objects: any[]): T => {
+  return objects.reduce((left, right) => {
+    Object.keys(right).forEach((key) => {
+      const lv = left[key];
+      const rv = right[key];
+
+      if (Array.isArray(lv) && Array.isArray(rv)) {
+        left[key] = lv.concat(...rv);
+      } else if (lv && typeof lv === 'object' && rv && typeof rv === 'object') {
+        left[key] = deepMerge(lv, rv);
+      } else {
+        left[key] = rv;
+      }
+    });
+    return left;
+  }, {}) as T;
+};
+
+export { merge, deepMerge };

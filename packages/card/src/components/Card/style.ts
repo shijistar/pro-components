@@ -1,10 +1,12 @@
 import type { GenerateStyle, ProAliasToken } from '@ant-design/pro-provider';
 import {
+  deepMerge,
   resetComponent,
   useStyle as useAntdStyle,
 } from '@ant-design/pro-utils';
+import { genCustomProCardStyle } from '../../gdcd-pro';
 
-interface ProCardToken extends ProAliasToken {
+export interface ProCardToken extends ProAliasToken {
   componentCls: string;
 }
 
@@ -15,7 +17,7 @@ const genActiveStyle = (token: ProCardToken) => ({
 
 const genProCardStyle: GenerateStyle<ProCardToken> = (token) => {
   const { componentCls } = token;
-  return {
+  const style = {
     [componentCls]: {
       position: 'relative',
       display: 'flex',
@@ -267,6 +269,7 @@ const genProCardStyle: GenerateStyle<ProCardToken> = (token) => {
       },
     },
   };
+  return deepMerge(style, genCustomProCardStyle(token));
 };
 
 const GRID_COLUMNS = 24;
