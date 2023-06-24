@@ -23,6 +23,7 @@ package-lock.json
 *bak
 .vscode
 GIT_HEAD
+.checksum
 
 # visual studio code
 .history
