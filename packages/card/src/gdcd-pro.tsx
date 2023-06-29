@@ -8,11 +8,11 @@ export const genCustomProCardStyle: GenerateStyle<ProCardToken> = (token) => {
       [`${componentCls}-header`]: {
         paddingInline: 16,
 
-        '&-border': {
-          '&': {
-            paddingBlockEnd: 8,
-          },
-        },
+        // '&-border': {
+        //   '&': {
+        //     paddingBlockEnd: 8,
+        //   },
+        // },
       },
 
       '&&-ghost': {
@@ -20,7 +20,6 @@ export const genCustomProCardStyle: GenerateStyle<ProCardToken> = (token) => {
           '&-header': {
             '&-border': {
               '&': {
-                paddingBlockEnd: 8,
                 marginBlockEnd: 16,
               },
             },
