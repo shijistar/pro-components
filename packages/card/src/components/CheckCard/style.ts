@@ -1,6 +1,8 @@
 ﻿import { Keyframes } from '@ant-design/cssinjs';
 import type { GenerateStyle, ProAliasToken } from '@ant-design/pro-provider';
 import { useStyle as useAntdStyle } from '@ant-design/pro-provider';
+import { deepMerge } from '@ant-design/pro-utils';
+import { genCheckCardProStyle } from '../../gdcd-pro';
 
 export interface ProListToken extends ProAliasToken {
   componentCls: string;
@@ -32,7 +34,7 @@ export const cardLoading = new Keyframes('card-loading', {
 });
 
 const genProStyle: GenerateStyle<ProListToken> = (token) => {
-  return {
+  const style = {
     [token.componentCls]: {
       position: 'relative',
       display: 'inline-block',
@@ -165,6 +167,7 @@ const genProStyle: GenerateStyle<ProListToken> = (token) => {
       },
     },
   };
+  return deepMerge(style, genCheckCardProStyle(token));
 };
 
 export function useStyle(prefixCls: string) {
